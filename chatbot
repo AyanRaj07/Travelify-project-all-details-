@@ -1,0 +1,34 @@
+# Import necessary libraries
+import random
+Pralik Duttafrom flask import Flask, request
+app = Flask( name )
+# Sample music dataset
+music_catalog = [
+{"title": "Song1", "artist": "Artist1", "genre": "Pop"},
+{"title": "Song2", "artist": "Artist2", "genre": "Rock"},
+{"title": "Song3", "artist": "Artist3", "genre": "Hip Hop"},
+# Add more songs to your dataset
+]
+# Basic recommendation algorithm
+def recommend_song(user_preferences):
+# Simple random recommendation for illustration purposes
+return random.choice(music_catalog)
+# Chatbot endpoint
+@app.route("/chatbot", methods=["POST"])
+def chatbot():
+user_message = request.form.get("message")
+# Example: Extract user preferences from the message (replace with your NLP logic)
+user_preferences = {"genre": "Pop", "mood": "Happy"}
+9
+# Get song recommendation
+recommended_song = recommend_song(user_preferences)
+# Construct the chatbot response
+response = f"Based on your preferences, I recommend '{recommended_song['title']}'
+by {recommended_song['artist']}. Enjoy!"
+return response
+# Run the Flask app
+if name == " main ":
+app.run(debug=True)
+```
+IV. Future Scope
+The future outlook for Ch
