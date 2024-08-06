@@ -1,0 +1,1895 @@
+//LOGIN 
+import React,{useState,useContext} from 'react' 
+import { Container,Row,Col,Form,FormGroup,Button } 
+from 'react-bootstrap' 
+import { Link ,useNavigate} from 'react-router-dom' 
+import loginImg from '../data/image/login.png' 
+import userIcon from '../data/image/user.png' 
+import '../style/login.css' 
+import {AuthContext} from './../context/AuthContext' 
+import {BASE_URL} from './../utils/config' 
+const Login = () => { 
+const [credential,setCredential]=useState({ 
+email:undefined, 
+password:undefined, 
+}); 
+const {dispatch}=useContext(AuthContext) 
+const navigate=useNavigate() 
+const handleClick= async (e)=>{ 
+e.preventDefault(); 
+dispatch({type:'LOGIN_START'}) 
+try { 
+const res= await 
+fetch(`${BASE_URL}/auth/login`,{ 
+method:'post', 
+headers:{ 
+'content-type':'application/json' 
+}, 
+credentials:'include', 
+body:JSON.stringify(credential) 
+}) 
+const result=await res.json() 
+if(!res.ok) alert(result.message) 
+console.log(result.data) 
+dispatch({type:'LOGIN_SUCCESS',payload:result.da 
+ta}) 
+navigate('/') 
+} catch (error) { 
+dispatch({type:'LOGIN_FAILURE',payload:error.mes 
+sage}) 
+} 
+} 
+const handleChange=e=>{ 
+setCredential(prev 
+=>({...prev,[e.target.id]:e.target.value})) 
+}; 
+return<section> 
+<Container> 
+<Row> 
+<Col lg='8' className='m-auto'> 
+<div className='login container d-flex 
+justify-content-between'> 
+<div className='login img'> 
+<img src={loginImg} alt="..."/> 
+</div> 
+<div className='login form'> 
+<div className='user'> 
+<img src={userIcon} alt="..."/> 
+</div> 
+<h2>Login</h2> 
+<Form onSubmit={handleClick}> 
+<FormGroup> 
+<input type='email' 
+placeholder='email' required id='email' 
+onChange={handleChange}/> 
+</FormGroup> 
+<FormGroup> 
+<input type='password' 
+placeholder='Password' required id='password' 
+onChange={handleChange}/> 
+</FormGroup> 
+<Button className='btn 
+secondary btn auth btn' type='submit'>Login</Button> 
+</Form> 
+<p>Dont have an account ?<Link 
+to='/register'>Create</Link></p> 
+</div> 
+</div> 
+</Col> 
+</Row> 
+</Container> 
+</section> 
+} 
+export default Login 
+//LOGIN CSS 
+.login img{ 
+width: 60%; 
+text-align: center; 
+} 
+.login img img{ 
+width: 70%; 
+object-fit: contain; 
+} 
+.login form{ 
+padding: 50px; 
+background: var(--secondary-color); 
+position: relative; 
+} 
+.login container{ 
+box-shadow: rgba(17,12,46,0.15) 0px 48px 100px 
+8px; 
+margin-top: 100px; 
+heught:77vh; 
+} 
+.login form .user{ 
+width: 80px; 
+height: 80px; 
+position: absolute; 
+top: -9%; 
+left: 50%; 
+transform: translate(-50%,-9%); 
+} 
+.login form .user img{ 
+width: 100%; 
+} 
+.login form h2{ 
+color: #fff; 
+text-align: center; 
+margin-bottom: 2rem; 
+} 
+.login form{ 
+width: 40%; 
+} 
+.login form input{ 
+width: 100%; 
+margin: 2px; 
+padding: 0.5rem 1rem; 
+border-radius: 5px; 
+border: none; 
+font-size: 1rem; 
+color: var(--heading-color); 
+} 
+.login form input:focus{ 
+outline: none; 
+} 
+.auth btn{ 
+background: var(--heading-color) !important; 
+width: 100%; 
+color: #fff !important; 
+} 
+.login form p{ 
+font-size: .9rem; 
+color: #fff; 
+margin-top: 1.5rem; 
+text-align: center; 
+} 
+.login form p a{ 
+color: var(--heading-color); 
+text-decoration: none; 
+margin-left: 5px; 
+font-weight: bold; 
+} 
+@media only screen and (max-width:768px){ 
+.login img{ 
+display: none; 
+} 
+.login form{ 
+width: 70%; 
+margin: auto; 
+} 
+.login container{ 
+padding-bottom: 3rem; 
+margin-top: 70px; 
+} 
+} 
+@media only screen and (max-width:576px){ 
+.login form{ 
+width: 100%; 
+} 
+.login container{ 
+padding-bottom: 1rem; 
+} 
+}
+//ADMIN 
+//Body part 
+import '../admin/css/Body.css'; 
+import React, { useEffect, useRef, useState } from 
+'react'; 
+import Highcharts from 'highcharts' 
+const Body = () => { 
+const refContainer = useRef(null); 
+const [dataSource, setDataSource] = useState([]); 
+useEffect(() => { 
+const chart = 
+Highcharts.chart(refContainer.current, { 
+chart: { 
+type: 'line' 
+}, // type of the chart 
+title: { 
+text: 'Bookings' 
+}, // title of the chart 
+yAxis: { 
+title: { 
+text: 'Customers' 
+}, // the title of the Y Axis 
+}, 
+xAxis: { 
+min: 0.4, 
+categories: ['Jan', 'Feb', 'Mar', 'Apr', 
+'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 
+'Dec'], 
+title: { 
+text: 'Year' 
+} // the title of the X Axis 
+}, 
+tooltip: { 
+headerFormat: '<span style="font- 
+size:13px;font- 
+weight:bold;">{point.key}</span><table>', 
+pointFormat: '<tr><td 
+style="color:{series.color};padding:0">{series.name}: 
+</td>' + 
+'<td 
+style="padding:0"><b>{point.y}</b></td></tr>', 
+footerFormat: '</table>', 
+shared: true, 
+useHTML: true 
+}, // tooltip appears when hovering over a point 
+credits: { 
+enabled: false 
+}, 
+series: dataSource // set of the data 
+}); 
+if (dataSource.length > 0) { 
+chart.hideLoading(); 
+} 
+else { 
+chart.showLoading(); 
+} 
+}, [dataSource]); 
+useEffect(() => { 
+setTimeout(() => { 
+setDataSource([{ 
+name: 
+data: 
+92, 93]  
+}, {  
+name: 
+data: 
+70, 78]  
+}, {  
+name: 
+data: 
+95, 97]  
+}, {  
+name: 
+data: 
+84, 86]  
+}]);  
+}, 2000);  
+'Raj', 
+[10, 14, 18, 61, 65, 72, 74, 79, 87, 89, 
+'Rahul', 
+[3, 9, 13, 20, 25, 38, 40, 53, 55, 69, 
+'Sanik', 
+[9, 15, 31, 50, 56, 60, 64, 67, 79, 82, 
+'Chandan', 
+[4, 12, 22, 36, 42, 46, 58, 63, 71, 82, 
+}, []); 
+return <> 
+<div> 
+<div className='container-fluid whole'> 
+<div className='row'> 
+<div className='col-12'> 
+<div className='body-title'> 
+<h1>Welcome to our Tours and Travel, 
+kolkata</h1> 
+<hr></hr> 
+</div> 
+</div> 
+</div> 
+<div className='row mt-2'> 
+<div className='col-12 col-md-3'> 
+<div className='card1'> 
+<div className='card1-left'> 
+<i className='fas fa-users'></i> 
+</div> 
+<div className='card1-right'> 
+<div className='num-title'> 
+Total Customers 
+</div> 
+<div className='num'> 
+2500 
+</div> 
+</div> 
+</div> 
+</div> 
+<div className='col-12 col-md-3'> 
+<div className='card1'> 
+<div className='card1-left'> 
+<i className='fas fa-users'></i> 
+</div> 
+<div className='card1-right'> 
+<div className='num-title'> 
+Total Subcribers 
+</div> 
+<div className='num'> 
+200 
+</div> 
+</div> 
+</div> 
+</div> 
+<div className='col-12 col-md-3'> 
+<div className='card1'> 
+<div className='card1-left'> 
+<i className='fas fa-users'></i> 
+</div> 
+<div className='card1-right'> 
+<div className='num-title'> 
+Total Bookings 
+</div> 
+<div className='num'> 
+200 
+</div> 
+</div> 
+</div> 
+</div> 
+<div className='col-12 col-md-3'> 
+<div className='card1'> 
+<div className='card1-left'> 
+<i className='fas fa-users'></i> 
+</div> 
+<div className='card1-right'> 
+<div className='num-title'> 
+Total Reviews 
+</div> 
+<div className='num'> 
+5000 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+<div className='row mt-4'> 
+<div className='col-12 col-md-3'> 
+<div className='card1'> 
+<div className='card1-left'> 
+<i className='fas fa-users'></i> 
+</div> 
+<div className='card1-right'> 
+<div className='num-title'> 
+Total Customers 
+</div> 
+<div className='num'> 
+2500 
+</div> 
+</div> 
+</div> 
+</div> 
+<div className='col-12 col-md-3'> 
+<div className='card1'> 
+<div className='card1-left'> 
+<i className='fas fa-users'></i> 
+</div> 
+<div className='card1-right'> 
+<div className='num-title'> 
+Total Subcribers 
+</div> 
+<div className='num'> 
+200 
+</div> 
+</div> 
+</div> 
+</div> 
+<div className='col-12 col-md-3'> 
+<div className='card1'> 
+<div className='card1-left'> 
+<i className='fas fa-users'></i> 
+</div> 
+<div className='card1-right'> 
+<div className='num-title'> 
+Total Bookings 
+</div> 
+<div className='num'> 
+200 
+</div> 
+</div> 
+</div> 
+</div> 
+<div className='col-12 col-md-3'> 
+<div className='card1'> 
+<div className='card1-left'> 
+<i className='fas fa-users'></i> 
+</div> 
+<div className='card1-right'> 
+<div className='num-title'> 
+Total Reviews 
+</div> 
+<div className='num'> 
+5000 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+<div className='row mt-4'> 
+<div className='col-12'> 
+<div ref={refContainer} /> 
+</div> 
+</div> 
+</div> 
+</div> 
+</> 
+} 
+export default Body 
+//Body CSS 
+.top-header{ 
+height: 50px; 
+background-color: #ff5b00; 
+} 
+.top-header{ 
+margin-left: 0px; 
+padding-top: 15px; 
+padding-left: 10px; 
+color: #fff; 
+} 
+.top-header .top-nav{ 
+color: #fff; 
+font-family: redo; 
+font-size: 15px; 
+font-weight: 500; 
+margin-left: 35px; 
+} 
+.body-title h1{ 
+font-family: redo; 
+padding: 20px 20px 0px 0px; 
+font-weight: 400; 
+letter-spacing: 0.3px; 
+} 
+.whole{ 
+height: 700px; 
+overflow-y: scroll; 
+} 
+.card1{ 
+height: 100px; 
+background-color:rgb(218, 125, 31); 
+border-radius: 5px; 
+padding-top: 15px; 
+font-size: larger; 
+color: #fff; 
+} 
+.card1 .card1-left{ 
+height: 100px; 
+width: 30%; 
+float: left; 
+text-align: center; 
+} 
+.card1 .card1-left i{ 
+font-size: 40px; 
+color: #fff; 
+opacity: 0.7; 
+display: block; 
+text-align: center; 
+padding-top: 30px; 
+} 
+//MAIN PART 
+import React from 'react'; 
+import Sidebar from './Sidebar'; 
+import { NavLink } from 'react-router-dom'; 
+import Body from './Body'; 
+const Main = () => { 
+return <> 
+<div> 
+<div className='container-fluid'> 
+<div className='row'> 
+<div className='col-12 col-md-2 m-0 p- 
+0'> 
+<Sidebar/> 
+</div> 
+<div className='col-12 col-md-10 m-0 
+p-0'> 
+{/* <div className='top-header'> 
+<form> 
+<i class="fas fa-bars"></i> 
+<NavLink to="/" className="top- 
+nav">Home</NavLink> 
+<NavLink to="/" className="top- 
+nav">Contact</NavLink> 
+<NavLink to="/pages/login"><i 
+className="fas fa-user float-right mr- 
+3"></i></NavLink> 
+<i class="fas fa-bell float-right 
+mr-3"></i> 
+right mr-3"></i> 
+</div> 
+</div> 
+</div> 
+<i class="fas fa-envelope float- 
+</form> 
+</div> */} 
+{/* {body area start} */} 
+<Body/> 
+{/* {body area end} */} 
+</div> 
+</> 
+} 
+export default Main 
+//Sidebar 
+import React from 'react'; 
+import '../admin/css/Sidebar.css'; 
+import Image from '../../data/image/logo.png'; 
+import { NavLink } from 'react-router-dom'; 
+function Sidebar() { 
+const Show = () => { 
+if 
+(document.getElementById('submenu').style.display === 
+'block') { 
+document.getElementById('submenu').style.d 
+isplay = 'none'; 
+} 
+else { 
+document.getElementById('submenu').style.d 
+isplay = 'block'; 
+} 
+} 
+const Show1 = () => { 
+if 
+(document.getElementById('submenu1').style.display === 
+'block') { 
+document.getElementById('submenu1').style. 
+display = 'none'; 
+} 
+else { 
+document.getElementById('submenu1').style. 
+display = 'block'; 
+} 
+} 
+const Show2 = () => { 
+if 
+(document.getElementById('submenu2').style.display === 
+'block') { 
+document.getElementById('submenu2').style. 
+display = 'none'; 
+} 
+else { 
+document.getElementById('submenu2').style. 
+display = 'block'; 
+} 
+} 
+const Show3 = () => { 
+if 
+(document.getElementById('submenu3').style.display === 
+'block') { 
+document.getElementById('submenu3').style. 
+display = 'none'; 
+} 
+else { 
+document.getElementById('submenu3').style. 
+display = 'block'; 
+} 
+} 
+return <> 
+<div> 
+<div className='container-fluid'> 
+<div className='row'> 
+<div className='col-12 m-0 p-0'> 
+<div className='sidebar'> 
+<div className='sidebar- 
+top'> 
+<img src={Image} 
+alt='image' height="80px" width="150px"></img> 
+</div> 
+<div className='sidebar- 
+bottom'>  
+<nav> 
+<NavLink to="/" 
+className="nav" id='nav1'><i class="fas fa-tachometer- 
+alt"></i>Dashboard</NavLink> 
+<NavLink to="/" 
+className="nav" onClick={Show}><i class="fa-solid fa- 
+torii-gate"></i>Tour<i id="drop1" class="fas fa- 
+plus"></i></NavLink> 
+<div id='submenu'> 
+<NavLink 
+to="/" className="nav"><i class="fas fa- 
+plus"></i>Create Tour</NavLink> 
+<NavLink 
+to="/" className="nav"><i class="far fa-pen-to- 
+square"></i>Edit Tour</NavLink> 
+</div> 
+<NavLink to="/" 
+className="nav" onClick={Show1}><i class="fas fa- 
+utensils"></i>Booking<i id="drop1" class="fas fa- 
+plus"></i></NavLink> 
+<div 
+id='submenu1'> 
+<NavLink 
+to="/" className="nav"><i class="fa-sharp fa-solid fa- 
+reply-all"></i>Get All Booking</NavLink> 
+</div> 
+<NavLink to="/" 
+className="nav" onClick={Show2}><i class="fas fa- 
+user"></i>User<i id="drop1" class="fas fa- 
+plus"></i></NavLink> 
+<div 
+id='submenu2'> 
+<NavLink 
+to="/" className="nav"><i class="fas fa-user- 
+secret"></i>Get Single User</NavLink> 
+<NavLink 
+to="/" className="nav"><i class="fas fa-users"></i>Get 
+All Users</NavLink> 
+</div> 
+<NavLink 
+to="/home" className="nav"><i class="fas fa-right- 
+from-bracket"></i>Sign Out</NavLink> 
+<div 
+className='title'> 
+RATOR</span> 
+<span>ADMINIST 
+</div> 
+<NavLink to="/" 
+className="nav"><i class="fas fa-user"></i>Add 
+User</NavLink> 
+<div 
+className='title'> 
+span> 
+<span>Report</ 
+</div> 
+<NavLink to="/" 
+className="nav"><i class="fas fa-pluse- 
+square"></i>Tour Report</NavLink> 
+<NavLink to="/" 
+className="nav"><i class="fas fa-pluse- 
+square"></i>Review Report</NavLink> 
+<NavLink to="/" 
+className="nav"><i class="fas fa-pluse- 
+square"></i>Booking Report</NavLink> 
+</nav> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+</> 
+} 
+export default Sidebar 
+//Sidebar CSS 
+.sidebar{ 
+height: 100% !important; 
+background-color:#e8eded; 
+} 
+.sidebar .sidebar-top{ 
+height: 190px; 
+background-color:#fff; 
+padding-top: 15px; 
+} 
+.sidebar .sidebar-top img{ 
+display: block; 
+margin: auto; 
+border-radius: 30%; 
+} 
+.sidebar-bottom{ 
+height: auto !important; 
+padding-top: 15px; 
+} 
+.sidebar-bottom nav .nav{ 
+display: block; 
+text-decoration: none; 
+color: black; 
+font-size: 15px; 
+font-weight: 600; 
+padding: 10px 15px; 
+font-family: redo; 
+animation: ADI 300ms ease-in-out forwards; 
+transform-origin: top center; 
+} 
+@keyframes ADI { 
+0%{ 
+transform: scaleY(0); 
+} 
+80%{ 
+} 
+transform: scaleY(1.1); 
+100%{ 
+transform: scaleY(1); 
+} 
+} 
+.sidebar-bottom nav .nav i{ 
+padding-right: 10px; 
+padding-left: 10px; 
+} 
+.sidebar-bottom nav .nav:hover{ 
+background-color: #f58220; 
+color: #fff; 
+padding-top: 7.5px !important; 
+} 
+#nav1{ 
+background-color: #f58220 !important; 
+color: #fff !important; 
+} 
+.sidebar-bottom nav .title{ 
+padding-left: 25px; 
+padding-top: 20px; 
+padding-bottom: 10px; 
+} 
+.sidebar-bottom nav .title span{ 
+font-size: 14px; 
+font-weight: 500; 
+letter-spacing: 0.3px; 
+opacity: 0.7; 
+} 
+#drop,#drop1{ 
+float: right; 
+padding-top: 6px; 
+font-size: 11px; 
+} 
+#submenu{ 
+display: none; 
+} 
+#submenu1{ 
+display: none; 
+} 
+#submenu2{ 
+display: none; 
+} 
+#submenu3{ 
+display: none; 
+} 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+//ABOUT PAGE 
+ 
+import React from 'react' 
+// import CommonSection from '../shared/CommonSection' 
+// import React , {useState, useEffect } from 'react' 
+ 
+import '../style/About.css' 
+ 
+const About = () => { 
+ 
+  return ( 
+    <> 
+   <div className="body1">    
+  <div class="container1"> 
+    <div class="about1"> 
+      <div class="text1"> 
+        <h1>About Us</h1> 
+        <div class="line1"></div> 
+      </div> 
+    </div> 
+    <div class="content1"> 
+      <p><b>L</b>orem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod 
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo 
+      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse 
+      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non 
+      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.orem ipsum dolor sit 
+amet, consectetur adipisicing elit, sed do eiusmod 
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
+      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo 
+      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse 
+      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non 
+      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p> 
+    </div> 
+    </div> 
+    <footer className='footer1'>Copyright @c design by: AK </footer> 
+    </div>  
+</> 
+) 
+} 
+export default About 
+ 
+/* About.css */ 
+ 
+.body1 { 
+    margin: 0; 
+    padding: 0; 
+} 
+ 
+.container1 { 
+    width: 100%; 
+    height: auto; 
+    display: flex; 
+    align-items: flex-start; 
+    flex-wrap: wrap; 
+} 
+ 
+.about1 { 
+    width: 100%; 
+    height: 600px; 
+    background-image: url(https://cdn.wallpapersafari.com/21/44/UHV3gB.jpg); 
+    /* background-image: url(https://coolwallpapers.me/picsup/2501447-4k-background-image-hd.jpg); 
+*/ 
+    /* /Couldn't link the image so i used linear-gradient background LOL!/ */ 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    flex-wrap: wrap; 
+} 
+ 
+.text1 { 
+    font-size: 30px; 
+    color: #fff; 
+    font-family: sans-serif; 
+    text-shadow: 0px 15px 12px #000; 
+} 
+ 
+.line1 { 
+    width: 200px; 
+    height: 8px; 
+    background-color: #1b17ff; 
+    display: block; 
+    position: relative; 
+    border-radius: 5px; 
+    left: -7%; 
+    box-shadow: 0px 15px 12px 0px #000; 
+} 
+ 
+ 
+.content1 { 
+    width: 100%; 
+    height: auto; 
+    background-color: yellow; 
+    font-size: 1.3vw; 
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans
+serif; 
+    color: rgb(147, 7, 61); 
+    line-height: 30px; 
+    text-align: center; 
+    padding-top: 15px; 
+} 
+ 
+b { 
+    font-size: 50px; 
+    color: #000; 
+    font-weight: 500px; 
+} 
+ 
+.footer1 { 
+    width: 100%; 
+    height: auto; 
+    background-color: black; 
+    color: azure; 
+    font-size: 1.3vw; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    text-align: center; 
+    line-height: 50px; 
+}
+// TOUR 
+import React,{useState,useEffect} from 'react' 
+import CommanSection from '../shared/CommanSection' 
+import '../style/tour.css'; 
+import ToureCard from '../shared/ToureCard'; 
+import Searchbar from '../shared/Searchbar' 
+import Newsletter from '../shared/NewsLetter'; 
+import { Container,Row,Col } from 'reactstrap'; 
+import useFetch from '../hooks/useFetch' 
+import { BASE_URL } from '../utils/config'; 
+const Tour = () => { 
+const [pageCount,setPageCount]=useState(0); 
+const [page,setPage]=useState(0); 
+const 
+{data:tours,loading,error}=useFetch(`${BASE_URL}/tour? 
+page=${page}`) 
+const 
+{data:tourCount}=useFetch(`${BASE_URL}/tour/search/get 
+TourCount`) 
+useEffect(()=>{ 
+const pages=Math.ceil(tourCount/8);// backend work 
+setPageCount(pages); 
+window.scrollTo(0,0) 
+},[page,tourCount,tours]); 
+return <> 
+<CommanSection title={"All 
+tours"}></CommanSection> 
+<section> 
+<Container> 
+<Row> 
+<Searchbar/> 
+</Row> 
+</Container> 
+</section> 
+<section className='pt-0'> 
+<Container> 
+{loading && <h4 className='text-center pt- 
+5'>Loading. ... </h4>} 
+{error && <h4 className='text-center pt- 
+5'>{error}</h4>} 
+{ 
+!loading && !error && 
+<Row> 
+{ 
+tours?.map(tour=>( 
+<Col lg='3' md='6' sm='6' className='mb-4' 
+key={tour._id}> 
+<ToureCard tour={tour}/> 
+</Col> 
+))} 
+<Col lg='12'> 
+<div className='pagination d-flex align- 
+items-center justify-content-center mt-4 gap-3'> 
+{ 
+[...Array(pageCount).keys()].map(number= 
+>( 
+<span key={number} onClick={()=> 
+setPage(number)} 
+className={page===number ? 
+'active page' : " "}> 
+{number +1} 
+</span> 
+)) 
+} 
+</div> 
+</Col> 
+</Row> 
+} 
+</Container> 
+</section> 
+<Newsletter/> 
+</> 
+} 
+export default Tour 
+// TOUR CSS 
+.pagination span{ 
+width: 2rem; 
+height: 2rem; 
+padding: 5px; 
+border-radius: 50px; 
+display: flex; 
+align-items: center; 
+justify-content: center; 
+border: 1px solid var(--secondary-color); 
+color: var(--heading-color); 
+font-size: 1.1rem; 
+cursor: pointer; 
+font-weight: bold; 
+} 
+.active page{ 
+background: var(--secondary-color); 
+color: #fff !important; 
+} 
+//TOUR DETAILS 
+import React,{useEffect, useRef,useState,useContext} 
+from "react"; 
+import '../style/tourdetail.css' 
+import { Container,Row,Col,Form,ListGroup } from 
+"react-bootstrap"; 
+import { useParams } from "react-router-dom"; 
+import avatar from '../data/image/avatar.jpg' 
+import calculateAvgRating from 
+'../utils/calculateAvgRating'; 
+import Booking from "../component/Booking/Booking"; 
+import NewsLetter from '../shared/NewsLetter'; 
+import useFetch from "../hooks/useFetch"; 
+import { BASE_URL } from "../utils/config"; 
+import { AuthContext } from 
+"./../context/AuthContext"; 
+const TourDetail = () => { 
+const {id}=useParams(); 
+const reviewMSgRef=useRef('') 
+const [tourRating,setTourRating]=useState(null) 
+const {user}=useContext(AuthContext) 
+//fetch data 
+const 
+{data:tour,loading,error}=useFetch(`${BASE_URL}/tour/$ 
+{id}`) 
+const 
+{photo,title,desc,price,address,reviews,city,distance, 
+maxGroupSize,}=tour; 
+const 
+{totalRating,avgRating}=calculateAvgRating(reviews) 
+// formate date 
+const 
+options={day:'numeric',month:'long',year:'numeric'} 
+const submitHandler =async e=>{ 
+e.preventDefault(); 
+const reviewText=reviewMSgRef.current.value; 
+try { 
+if(!user || user === undefined || user === 
+null){ 
+alert("please sign in"); 
+} 
+const reviewObj={ 
+username:user?.username, 
+reviewText, 
+rating:tourRating, 
+} 
+const res = await 
+fetch(`${BASE_URL}/review/${id}`,{ 
+method:'post', 
+headers:{ 
+'content-type':'application/json' 
+}, 
+credentials:'include', 
+body:JSON.stringify(reviewObj) 
+}) 
+const result=await res.json() 
+if(!res.ok){ 
+return alert(result.message) 
+} 
+alert(result.message) 
+} catch (err) { 
+alert(err.message) 
+} 
+} 
+useEffect(()=>{ 
+window.scrollTo(0,0); 
+},[tour]) 
+return <> 
+<section> 
+<Container> 
+{loading && <h4 className="text-center pt- 
+5">Loading .......... </h4>} 
+{error && <h4 className="text-center pt- 
+5">{error}</h4>} 
+{ 
+!loading && !error &&<Row> 
+<Col lg='8'> 
+<div className='tour content'> 
+<img src={photo} alt='...'/> 
+<div className='tour info'> 
+<h2>{title}</h2> 
+<div className='d-flex align-items-center 
+gap-5'> 
+<span className='tour rating d-flex align- 
+items-center gap-1'> 
+<i class="ri-star-fill" 
+style={{'color':"var(--secondary-color)"}}></i> 
+{ avgRating=== 0 ? null : 
+avgRating}  
+{totalRating ===0 ? 
+("not rated") 
+:( 
+<span>({reviews?.length})</span>)} 
+</span> 
+<span> 
+<i class="ri-map-pin-2- 
+fill"></i>{address} 
+</span> 
+</div> 
+<div className='tour extra-details'> 
+<span><i class="ri-map-pin- 
+fill"></i> {city} </span> 
+<span><i class="ri-money-dollar- 
+circle-line"></i>${price} / person</span> 
+<span><i class="ri-map-pin-time- 
+line"></i>{distance}km</span> 
+<span><i class="ri-group- 
+line"></i>{maxGroupSize}people</span> 
+</div> 
+<h5>Description</h5> 
+<p>{desc}</p> 
+</div> 
+<div className='tour reviews mt-4'> 
+<h4>Reviews ({reviews?.length} reviews)</h4> 
+<Form onSubmit={submitHandler}> 
+<div className='d-flex align-items-center 
+gap-3 mb-4 rating group'> 
+<span onClick={()=>setTourRating(1)}> 
+1 <i className="ri-star-s-fill "></i> 
+</span> 
+<span onClick={()=>setTourRating(2)}> 
+2 <i className="ri-star-s-fill"></i> 
+</span> 
+<span onClick={()=>setTourRating(3)}> 
+3 <i className="ri-star-s-fill"></i> 
+</span> 
+<span onClick={()=>setTourRating(4)}> 
+4 <i className="ri-star-s-fill"></i> 
+</span> 
+<span onClick={()=>setTourRating(5)}> 
+5 <i className="ri-star-s- 
+fill"></i> 
+</span> 
+</div> 
+<div className='review input'> 
+<input type='text' ref={reviewMSgRef} 
+placeholder='share your thougths' required/> 
+<button className='btn primary btn text- 
+white' type='submit'>Submit</button> 
+</div> 
+</Form> 
+{/* difficult */} 
+<ListGroup className='user reviews'> 
+{ 
+reviews?.map(review=>( 
+<div className="review item"> 
+<img src={avatar} 
+alt="avatar"/> 
+<div className='w-100'> 
+<div className='d-flex align- 
+items-center justify-content-between'> 
+<div> 
+<h5>{review.username}</h5> 
+<p>{new 
+Date(review.createdAt).toLocaleDateString("en- 
+US",options)}</p> 
+</div> 
+<span className='d-flex 
+align-items-center'> 
+{review.rating}<i 
+className="ri-star-s-fill"></i> 
+</span> 
+</div> 
+<h6>{review.reviewText}</h6> 
+</div> 
+</div> 
+)) 
+} 
+</ListGroup> 
+</div> 
+</div> 
+</Col> 
+<Col lg='4'> 
+<Booking tour={tour} 
+avgRating={avgRating} /> 
+</Col> 
+</Row> 
+} 
+</Container> 
+</section> 
+<NewsLetter/> 
+</> 
+} 
+export default TourDetail; 
+//TOURDETAILS CSS 
+.tour content img{ 
+width: 100%; 
+border-radius: .5rem; 
+margin-bottom: 2.5rem; 
+} 
+.tour info, .tour reviews{ 
+/* margin-bottom: 2rem; */ 
+border-radius: .5rem; 
+padding: 2rem; 
+border: 1px solid rgb(229,231,235); 
+padding: 2rem; 
+} 
+.tour info h2{ 
+font-size: 1.5rem; 
+} 
+.tour info span{ 
+display: flex; 
+align-items: center; 
+gap: .5rem; 
+font-style: 1rem; 
+columns: var(--text-color); 
+} 
+.tour info span i{ 
+color: var(--heading-color); 
+font-size: 1.1rem; 
+} 
+.tour extra-details{ 
+display: flex; 
+align-items: center; 
+column-gap: 2.7rem; 
+margin-top: 1rem; 
+margin-bottom: 2.5rem; 
+} 
+.tour info h5{ 
+margin-bottom: 1rem; 
+font-size: 1.3rem; 
+} 
+.tour info p{ 
+line-height: 30px; 
+font-size: 1rem; 
+color: var(--text-color); 
+} 
+.rating group span{ 
+font-size: 1.1rem; 
+display: flex; 
+align-items: center; 
+color: var(--secondary-color); 
+cursor: pointer; 
+} 
+.rating group span i{ 
+color: var(--secondary-color); 
+} 
+.tour reviews h4{ 
+margin-bottom: 3rem; 
+} 
+.review input{ 
+display: flex; 
+align-items: center; 
+justify-content: space-between; 
+width:100% ; 
+padding: 0.7rem; 
+border-radius: 2rem; 
+border: 1px solid var(--secondary-color); 
+} 
+.review input input{ 
+width: 100%; 
+padding: 0.5rem 0; 
+border: none; 
+} 
+.review input input:focus{ 
+outline: none; 
+} 
+.review item{ 
+display: flex; 
+align-items: center; 
+column-gap: 1rem; 
+margin-bottom: 2rem; 
+} 
+.review item img{ 
+width: 3.5rem; 
+height: 3.5rem; 
+border-radius: 50px; 
+object-fit: cover; 
+} 
+.user reviews{ 
+margin-top: 2.5rem; 
+} 
+.review item h5{ 
+font-size: 1rem; 
+margin-bottom: 0; 
+} 
+.review item p{ font
+size: .9rem; 
+color:var(--text-color) ; 
+} 
+.review item h6{ font
+size: 1.1rem; 
+color: var(--text-color); 
+} 
+.review item span i{ 
+font-size: 1.2rem; 
+color:var(--secondary-color); 
+} 
+.review item span{ 
+font-weight: bold; 
+} 
+@media only screen and (max-width:768px){ 
+.tour extra-details{ 
+flex-wrap: wrap; 
+row-gap:1rem ; 
+} 
+.tour extra-details span{ 
+font-size: .9rem; 
+} 
+.tour extra-details span i{ 
+font-size: 1rem; 
+} 
+} 
+//CALCULATE AVERAGE RATING 
+const calculateAvgRating = reviews=> { 
+const totalRating=reviews?.reduce((acc,item)=> 
+acc+item.rating,0); 
+const avgRating= 
+totalRating === 0 
+? "" 
+: totalRating ===1 
+? totalRating 
+: (totalRating / reviews?.length).toFixed(1); 
+return{ 
+totalRating, 
+avgRating 
+} 
+} 
+export default calculateAvgRating 
+//COMMAN SECTION 
+import React from 'react' 
+import './commonsection.css' 
+import { Container,Row,Col } from 'reactstrap' 
+const CommanSection = ({title}) => { 
+return ( 
+<section className='commonsection'> 
+<Container> 
+<Row> 
+<Col lg='12'> 
+<h1>{title}</h1> 
+</Col> 
+</Row> 
+</Container> 
+</section> 
+) 
+} 
+export default CommanSection 
+//COMMANSECTION CSS 
+.commonsection{ 
+background:linear- 
+gradient(rgba(0,0,0,0.45),rgba(0,0,0,0.45)),url('../da 
+ta/image/tour-img01.jpg') no-repeat center center ; 
+background-size: cover; 
+height: 300px; 
+display: flex; 
+align-items: center; 
+justify-content: center; 
+text-align: center; 
+} 
+.commonsection h1{ 
+font-size: 2.5rem; 
+color: wheat; 
+} 
+//TOUR CARD 
+import React from 'react' 
+import { Card, CardBody } from 'react-bootstrap' 
+import { Link } from 'react-router-dom' 
+import './tour-card.css'; 
+import calculateAvgRating from 
+'../utils/calculateAvgRating'; 
+const ToureCard = ({ tour }) => { 
+const { _id, title, city, photo, price, featured, 
+reviews } = tour 
+const 
+{totalRating,avgRating}=calculateAvgRating(reviews) 
+return <div className='tour card'> 
+<Card> 
+<div className='tour img'> 
+<img src={photo} alt='...' /> 
+{ featured && <span>Featured</span>} 
+</div> 
+<CardBody> 
+<div className='card top d-flex 
+align-items-center justify-content-between'> 
+<span className='tour location d- 
+flex align-items-center gap-1'> 
+<i class="ri-map-pin- 
+line"></i>{city} 
+</span> 
+<span className='tour rating d- 
+flex align-items-center gap-1'> 
+<i class="ri-star- 
+fill"></i>{avgRating === 0 ? null : avgRating} 
+{totalRating ===0 ? 
+("not rated") 
+:( 
+<span>({reviews.length})</span>)} 
+</span> 
+</div> 
+<h5 className='tour title'><Link 
+to={`/tour/${_id}`} >{title}</Link></h5> 
+<div className='card bottom d-flex ai 
+align-items-center justify-content-between mt-3'> 
+<h5>${price} <span>/per 
+person</span></h5> 
+booking btn'> 
+now</Link> 
+<button className='btn 
+<Link to={`/tour/${_id}`}>Book 
+</button> 
+</div> 
+</CardBody> 
+</Card> 
+</div> 
+} 
+export default ToureCard 
+//TOURCARD CSS 
+.tour img img{ 
+width: 100%; 
+border-radius: 5px 5px 0 0; 
+} 
+.card{ 
+border: none !important; 
+box-shadow:rgba(0,0,0,0.2) 0px 18px 50px -10px ; 
+} 
+.tour img{ 
+position: relative; 
+} 
+.tour img span{ 
+position: absolute; 
+bottom: 0; 
+right: 0; 
+width: max-content; 
+height: max-content; 
+z-index: 10; 
+background: var(--primary-color); 
+color: #fff; 
+padding:0.3rem 0.5rem ; 
+border-radius: 3px 0 0 0 ; 
+} 
+.card top span i{ 
+color: var(--secondary-color); 
+} 
+.tour rating{ 
+font-size:.9rem; 
+color: var(--text-color); 
+} 
+.tour location{ 
+color: var(--heading-color); 
+font-weight: bold; 
+font-size: .9rem; 
+} 
+.tour rating i, .tour location i{ 
+font-size: 1rem; 
+} 
+.tour title{ 
+margin-top: 1rem; 
+font-size: 1.1rem; 
+cursor: pointer; 
+} 
+.tour title a{ 
+text-decoration: none; 
+color: var(--heading-color); 
+transition: 0.3s; 
+} 
+.tour title a:hover{ 
+color: var(--secondary-color); 
+} 
+.card bottom h5{ 
+color: var(--secondary-color); 
+font-size: 1.1rem; 
+font-weight: bolder; 
+} 
+.card bottom h5 span{ 
+font-weight: bold; 
+color:var(--text-color) ; 
+font-size: .8rem; 
+} 
+.booking btn{ 
+background: var(--secondary-color) !important; 
+cursor: pointer; 
+padding: 0.2rem 0.5rem !important; 
+} 
+.booking btn a{ 
+text-decoration: none; 
+font-size: .9rem; 
+color: #fff; 
+} 
+.booking btn a:hover{ 
+color: #fff; 
+} 
+@media only screen and (max-width:992px){ 
+.tour title{ 
+font-size: 1rem; 
+} 
+.booking btn a{ 
+font-size: .8rem; 
+} 
+.booking btn{ 
+padding: .3rem .5rem !important; 
+} 
+.tour location, .tour rating{ 
+font-size: .8rem; 
+} 
+} 
+//SUBTITLE 
+import React from 'react' 
+const Subtitle = ({Subtitle}) => { 
+return ( 
+<h3 className='section subtitle'>{Subtitle}</h3> 
+) 
+} 
+export default Subtitle 
+//BOOKING 
+import './booking.css'; 
+import React,{useState,useContext} from 'react' 
+import { 
+Form,FormGroup,ListGroup,ListGroupItem,Button} from 
+'react-bootstrap'; 
+import { useNavigate } from 'react-router-dom'; 
+import { AuthContext } from 
+'../../context/AuthContext'; 
+import { BASE_URL } from '../../utils/config'; 
+const Booking = ({tour,avgRating}) => { 
+const {price,reviews,title}=tour; 
+const navigate=useNavigate(); 
+const {user}=useContext(AuthContext) 
+const [booking,setBooking]=useState({ 
+userId:user && user._id, 
+userEmail:user && user.email, 
+tourName:title, 
+fullName:'', 
+phone:'', 
+guestSize:'', 
+bookAt:'' 
+}); 
+const handleChanger=(e)=>{ 
+setBooking(prev 
+=>({...prev,[e.target.id]:e.target.value})) 
+}; 
+const servesfee=10; 
+const 
+totalAmount=Number(price)*Number(booking.guestSize)+Nu 
+mber(servesfee) 
+const handleClick=async e=>{ 
+e.preventDefault (); 
+console.log(booking) 
+try { 
+if(!user || user===undefined || 
+user===null){ 
+return alert("please sign in"); 
+} 
+const res=await 
+fetch(`${BASE_URL}/booking`,{ 
+method:'post', 
+headers:{ 
+'content-type':'application/json' 
+}, 
+credentials:'include', 
+body:JSON.stringify(booking) 
+}) 
+const result=await res.json() 
+if(!res.ok){ 
+return alert(result.message) 
+} 
+navigate('/paystack') 
+} catch (err) { 
+alert(err.message) 
+} 
+} 
+return <div className='booking'> 
+<div className='booking top d-flex align-items- 
+center justify-content-between'> 
+<h3>${price} <span>/person</span></h3> 
+<span className='tour rating d-flex align-items- 
+center '> 
+<i class="ri-star-fill" ></i> 
+{ avgRating=== 0 ? null : 
+avgRating} ({reviews?.length}) 
+</span> 
+</div> 
+<div className='booking form'> 
+<h5>Information</h5> 
+<Form className='booking info-form' 
+onSubmit={handleClick}> 
+<FormGroup> 
+<input type='text' 
+placeholder='fullName' id='fullName' 
+onChange={handleChanger} required/> 
+</FormGroup> 
+<FormGroup> 
+<input type='number' 
+placeholder='phone' id='phone' 
+onChange={handleChanger} required/> 
+</FormGroup> 
+<FormGroup className='d-flex align-items- 
+center gap-3'> 
+<input type='date' placeholder='' 
+id='bookAt' onChange={handleChanger} 
+required/> 
+<input type='number' 
+placeholder='guest' 
+id='guestSize' onChange={handleChanger} required/> 
+</FormGroup> 
+</Form> 
+</div> 
+{/* botton */} 
+<div className='booking bottom'> 
+<ListGroup> 
+<ListGroupItem className='border-0 
+px-0'> 
+<h5 className='d-flex align- 
+items-center gap-1'>${price}<i class='ri-close- 
+line'></i> 1 person</h5> 
+<span>${price}</span> 
+</ListGroupItem> 
+<ListGroupItem className='border-0 
+px-0'> 
+px-0 total'> 
+<h5>services charge</h5> 
+<span>{servesfee}$</span> 
+</ListGroupItem> 
+<ListGroupItem className='border-0 
+<h5>Total</h5> 
+<span>{totalAmount}$</span> 
+</ListGroupItem> 
+</ListGroup> 
+<Button className='btn primary btn w-100 
+mt-4'type='submit' onClick={handleClick}>Book 
+Now</Button> 
+</div> 
+</div> 
+} 
+export default Booking 
+//BOOKING CSS 
+.booking{ 
+padding: 2rem; 
+border-radius: .5rem; 
+border: 1px solid rgb(229,231,235); 
+position: sticky; 
+top: 80px; 
+} 
+.booking top h3{ 
+font-size: 2rem; 
+font-weight: bolder; 
+} 
+.booking top h3 span{ 
+font-size: 1.1rem; 
+font-weight: 400; 
+color: var(--text-color); 
+} 
+.booking top span{ 
+font-size: 1.1rem; 
+font-weight: 600; 
+color: var(--text-color); 
+} 
+.booking top span i{ 
+color: var(--secondary-color); 
+} 
+.booking top{ 
+padding-bottom: 2rem; 
+border-bottom: 1px solid rgb(229,231,235); 
+} 
+.booking form{ 
+padding-top: 2rem; 
+} 
+.booking form h5{ 
+margin-bottom: 1rem; 
+} 
+.booking form input{ 
+width: 100%; 
+padding: 0.5rem; 
+border-radius: .5rem; 
+color: var(--heading-color); 
+font-size: 1rem; 
+border: none; 
+border-bottom: 1px solid rgb(229,231,235); 
+} 
+.booking form input:focus{ 
+outline: none; 
+} 
+.booking info-form{ 
+padding: 1rem; 
+border: 1px solid rgb(229,231,235); 
+} 
+.booking bottom .list-group-item{ 
+display: flex; 
+align-items: center; 
+justify-content: space-between; 
+} 
+.booking bottom .list-group-item h5, .booking bottom 
+.list-group-item span{ 
+font-size: 1rem; 
+color: var(--text-color); 
+font-weight: bold; 
+} 
+.booking bottom{ 
+margin-top: 1rem; 
+} 
+.total h5, .total span{ 
+color: var(--heading-color) !important; 
+font-weight: bolder !important; 
+font-size: 1.1rem !important; 
+} 
+//PAYSTACK 
+import React, { useState } from "react"; 
+import '../style/paystack.css' 
+import { usePaystackPayment } from "react-paystack"; 
+import { useNavigate } from "react-router-dom"; 
+const PayStack = () => { 
+// Setting config object to a state to dynamically 
+capture info from Form 
+const [config, setConfig] = useState({ 
+name: "", 
+email: "", 
+amount: 0, 
+publicKey: 
+"pk_test_c7ed2f7ea919bcddf3828375e170b8a5d49570a3", 
+}); 
+const navigate=useNavigate(); 
+// First initialization of the Library 
+const initializePayment = 
+usePaystackPayment(config); 
+// Callback if transaction is successful 
+const onSuccess = () => { 
+alert("Payment Successful, check your email 
+for confirmation"); 
+}; 
+// Callback if payment gateway is closed 
+const onClose = () => { 
+alert("Opps, Payment not completed"); 
+}; 
+const handleChange = (e) => { 
+const valueName = e.target.name; 
+const value = e.target.value; 
+setConfig({ ...config, [valueName]: value }); 
+console.log(config); 
+}; 
+const handleSubmit = (e) => { 
+e.preventDefault(); 
+// Trigger Payment Gateway on Form Submit 
+initializePayment(onSuccess, onClose); 
+navigate('/thankyou'); 
+}; 
+return ( 
+<>  
+<div className="my-header text-center"> 
+<h5>Paystack in React Demo</h5> 
+</div> 
+<div className="container"> 
+<div className="row mt-5"> 
+<div className="col-sm-4 mx-auto 
+my-form text-center"> 
+<form onSubmit={handleSubmit}> 
+<div className="mb-3"> 
+<input 
+type="text" 
+id="name" 
+name="name" 
+placeholder="Enter 
+Name" 
+ange} 
+Email" 
+required 
+onChange={handleCh 
+/> 
+</div> 
+<div className="mb-3"> 
+<input 
+type="email" 
+id="email" 
+name="email" 
+placeholder="Enter 
+required 
+onChange={handleCh 
+ange} 
+/> 
+</div> 
+<div className="mb-3"> 
+<input 
+type="tel" 
+id="amount" 
+name="amount" 
+placeholder="Enter 
+Amount" 
+ange} 
+required 
+onChange={handleCh 
+/> 
+</div> 
+<div> 
+<button 
+type="submit">Pay Now</button> 
+</div> 
+</form> 
+</div> 
+</div> 
+</div> 
+</> 
+); 
+}; 
+export default PayStack; 
+//Paystack CSS 
+.my-header{ 
+padding: 10px 
+} 
+.my-form form{ 
+/* height: 80vh; */ 
+border: 1px solid rgb(222, 136, 70); 
+padding: 30px; 
+border-radius: 10px; 
+} 
+.my-form input{ 
+padding: 5px 15px;  
+border: 1px solid rgb(222, 
+border-radius: 8px; 
+display: block; 
+width: 100% 
+} 
+136, 70); 
+.my-form button{ 
+padding: 5px 15px; 
+border: 1px solid rgb(222, 136, 70); 
+border-radius: 8px; 
+} 
+.my-form input:hover { 
+border-color: rgb(222, 136, 70); 
+color: rgb(222, 136, 70); 
+} 
+//AuthContext 
+import {createContext,useEffect,useReducer} 
+from 'react' 
+const initial_state = { 
+user:localStorage.getItem('user') !==undefined ? 
+JSON.parse(localStorage.getItem('user')):null, 
+loading:false, 
+error:null 
+}; 
+export const AuthContext=createContext(initial_state) 
+const AuthReducer=(state,action)=>{ 
+switch(action.type){ 
+case 'LOGIN_START': 
+return { 
+user:null, 
+loading:true, 
+error:null 
+}; 
+case 'LOGIN_SUCCESS': 
+return { 
+user:action.payload, 
+loading:false, 
+error:null 
+} 
+case 'LOGIN_FAILURE': 
+return { 
+user:null, 
+loading:false, 
+error:action.payload 
+} 
+case 'REGISTER_SUCCESS': 
+return { 
+user:null, 
+loading:false, 
+error:null 
+} 
+case 'LOGOUT': 
+return { 
+user:null, 
+loading:false, 
+error:null 
+} 
+default : 
+return state; 
+} 
+}; 
+export const AuthContextProvider=({children})=>{ 
+const [state,dispatch] 
+=useReducer(AuthReducer,initial_state) 
+useEffect(()=>{ 
+localStorage.setItem('user',JSON.stringify(sta 
+te.user)) 
+},[state.user]) 
+return <AuthContext.Provider value={{ 
+user:state.user, 
+loading:state.loading, 
+error:state.error, 
+dispatch, 
+}}> 
+{children} 
+</AuthContext.Provider> 
+} 
+//config 
+export const BASE_URL='http://localhost:4000/api/v1'; 
+//PayStack.css 
+.my-header{ 
+padding: 10px 
+} 
+.my-form form{ 
+/* height: 80vh; */ 
+border: 1px solid rgb(222, 136, 70); 
+padding: 30px; 
+border-radius: 10px; 
+} 
+.my-form input{ 
+padding: 5px 15px; 
+border: 1px solid rgb(222, 136, 70); 
+border-radius: 8px; 
+display: block; 
+width: 100% 
+} 
+.my-form button{ 
+padding: 5px 15px; 
+border: 1px solid rgb(222, 136, 70); 
+border-radius: 8px; 
+} 
+.my-form input:hover { 
+border-color: rgb(222, 136, 70); 
+color: rgb(222, 136, 70); 
+//THANK YOU 
+import React from 'react' 
+import { Container,Row,Col,Button } from 'react- 
+bootstrap' 
+import { Link } from 'react-router-dom' 
+import '../style/thankyou.css' 
+const Thankyou = () => { 
+return <section> 
+<Container> 
+<Row> 
+<Col lg='12' className='pt-5 text-center'> 
+<div className='thank you'> 
+<span> 
+<i className='ri-checkbox- 
+circle-line'></i> 
+<h1 className='mb-3 fw- 
+semibold'>Thank You</h1> 
+is booked</h3> 
+<h3 className='mb-4'>your tour 
+<Button className='btn 
+primary btn w-25'><Link to='/home'>back to home 
+page</Link></Button> 
+</span> 
+</div> 
+</Col> 
+</Row> 
+</Container> 
+</section> 
+} 
+export default Thankyou 
+//Thank You CSS 
+.thank you span i{ 
+font-size: 4rem; 
+color: green; 
+} 
+.thank you h1{ 
+font-size: 3.6rem; 
+font-family: var(--subtitle-font-name); 
+} 
+Image : IMAGE IN PROGRESS 
