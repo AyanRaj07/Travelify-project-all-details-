@@ -1,0 +1,939 @@
+//Layout 
+import React from 'react' 
+import Header from './../header/Header' 
+import Footer from './../footer/Footer' 
+import Router from '../../router/Router' 
+const Layout = () => { 
+return <> 
+<Header/> 
+<Router/> 
+<Footer/> 
+</> 
+} 
+export default Layout 
+//Subtitle 
+import React from 'react' 
+const Subtitle = ({Subtitle}) => { 
+return ( 
+<h3 className='section subtitle'>{Subtitle}</h3> 
+) 
+} 
+export default Subtitle 
+//Searchbar 
+import React,{useRef} from 'react' 
+import './searchbar.css' 
+import { Col,Form,FormGroup } from 'react-bootstrap'; 
+import {BASE_URL} from './../utils/config' 
+import { useNavigate } from 'react-router-dom'; 
+const Searchbar = () => { 
+const locationRef=useRef('') 
+const distanceRef=useRef(0) 
+const maxGroupSizeRef=useRef(0) 
+const navigate=useNavigate(); 
+const searchHandler=async()=>{ 
+const location=locationRef.current.value; 
+const distance=distanceRef.current.value; 
+const 
+maxGroupSize=maxGroupSizeRef.current.value; 
+if(location==='' || distance==='' || 
+maxGroupSize===''){ 
+return alert('All field must be filled'); 
+} 
+const res =await 
+fetch(`${BASE_URL}/tour/search/getTourBySearch?city=${ 
+location}&distance=${distance}&maxGroupSize=${maxGroup 
+Size}`); 
+if(!res.ok) alert('something went wrong') 
+const result=await res.json() 
+navigate(`/tour/search?city=${location}&distan 
+ce=${distance}&maxGroupSize=${maxGroupSize}`,{state:re 
+sult.data}); 
+} 
+return<Col lg="12"> 
+<div className='search bar'> 
+<Form className='d-flex align-items-center 
+gap-4'> 
+<FormGroup className='d-flex gap-3 
+form group form group-fast'> 
+<span><i class="ri-map-pin- 
+line"></i></span> 
+<div> 
+<h6>Location</h6> 
+<input type='text' 
+placeholder='where is your destination' 
+ref={locationRef}/> 
+</div> 
+</FormGroup> 
+<FormGroup className='d-flex gap-3 
+form group form group-fast'> 
+<span><i class="ri-map-pin-time- 
+line"></i></span> 
+<div> 
+<h6>distance</h6> 
+<input type='number' 
+placeholder='distance km/hrs' ref={distanceRef}/> 
+</div> 
+</FormGroup> 
+<FormGroup className='d-flex gap-3 
+form group form group-last'> 
+<span><i class="ri-group- 
+line"></i></span> 
+<div> 
+<h6>Max people</h6> 
+<input type='number' 
+placeholder='0' ref={maxGroupSizeRef}/> 
+</div> 
+</FormGroup> 
+<span className='search icon' 
+type="submit" onClick={searchHandler}> 
+<i class="ri-search-line"></i> 
+</span> 
+</Form> 
+</div> 
+</Col> 
+} 
+export default Searchbar 
+// SearchBar CSS 
+.search bar{ 
+padding: 0.5rem 1rem; 
+border-radius: 50px; 
+box-shadow: rgba(17,12,46, 0.15) 0px 48px 100px 
+0px; 
+width: max-content; 
+margin-top: 50px; 
+} 
+.form group span{ 
+font-size:1.8rem; 
+color:#ee6e6e; 
+} 
+.form group input{ 
+border: none; 
+font-size: 0.9rem; 
+color: var(--heading-color); 
+font-weight: bold; 
+} 
+.form group input:focus{ 
+outline: none; 
+} 
+.form group h6{ 
+margin-bottom: 0; 
+} 
+.form group-fast{ 
+border-right:2px solid #ddd ; 
+} 
+.search icon i{ 
+font-size: 1.6rem; 
+padding: 0.5rem; 
+background: var(--secondary-color); 
+color: #fff; 
+border-radius: 10px 5px 10px 5px; 
+cursor: pointer; 
+} 
+@media only screen and (max-width:992px){ 
+.search bar{ 
+width: 100%; 
+border-radius: 2rem; 
+} 
+.search bar form{ 
+flex-wrap: wrap; 
+} 
+.search bar form .form group{ 
+width: 48%; 
+} 
+} 
+@media only screen and (max-width:576px){ 
+.search bar form .form group{ 
+width: 100%; 
+} 
+.form group input{ 
+font-size: 0.7rem; 
+} 
+.form group span i{ 
+font-size: 1.1rem; 
+} 
+.form group h6{ 
+font-size: 1rem; 
+} 
+}
+//Hooks, UseFetch 
+import { useState,useEffect } from "react" 
+const useFetch=(url)=>{ 
+const[data,setData]=useState([]) 
+const[error,setError]=useState(null) 
+const[loading,setLoading]=useState(false) 
+useEffect(()=>{ 
+const fetchData=async()=>{ 
+setLoading(true); 
+try { 
+const res=await fetch(url) 
+if(!res.ok){ 
+setError('failed to fetch') 
+} 
+const result=await res.json() 
+setData(result.data) 
+setLoading(false) 
+} catch (err) { 
+setError(err.message) 
+// alert("failed to fetch")
+  setLoading(false) 
+} 
+}; 
+fetchData(); 
+},[url]) 
+return{ 
+data, 
+error, 
+loading 
+} 
+} 
+export default useFetch 
+//Services 
+import React from 'react' 
+import ServiceCard from './ServiceCard' 
+import { Col } from 'react-bootstrap' 
+import weatherImg from '../data/image/weather.png' 
+import guideImg from '../data/image/guide.png' 
+import customizationImg from 
+'../data/image/customization.png' 
+const servicesData=[ 
+{ 
+imgUrl:weatherImg, 
+title: "calculate weather", 
+desc:"MERN Stack Tours & Travels Booking 
+Website", 
+}, 
+{ 
+imgUrl:guideImg, 
+title: "best tour guid", 
+desc:"MERN Stack Tours & Travels Booking 
+Website", 
+}, 
+{ 
+imgUrl:customizationImg, 
+title: "customization", 
+desc:"MERN Stack Tours & Travels Booking 
+Website", 
+}, 
+] 
+const ServiceList = () => { 
+return <> 
+{ 
+servicesData.map((item,index)=> 
+<Col lg='3' md='6' sm='12' className='mb-4' 
+key={index}> 
+<ServiceCard item={item}/> 
+</Col>) 
+} 
+</> 
+} 
+export default ServiceList
+//Service Card 
+import React from 'react' 
+import './service-card.css' 
+const ServiceCard = ({item}) => { 
+const{imgUrl,title,desc}=item 
+return<div className='service item'> 
+<div className='service img'> 
+<img src={imgUrl} alt='...'/> 
+</div> 
+<h5>{title}</h5> 
+<p>{desc}</p> 
+</div> 
+} 
+export default ServiceCard 
+//Service card CSS 
+.service item{ 
+padding: 1rem; 
+border-bottom: 1px solid #faa83586; 
+border-right: 1px solid #faa83586; 
+border-radius: 0.5rem; 
+} 
+.service img{ 
+width: 50px; 
+height: 50px; 
+display: flex; 
+align-items: center; 
+justify-content: center; 
+border-radius: 50px; 
+background: var(--secondary-color); 
+padding: 0.5rem; 
+margin-bottom: 1rem; 
+line-height: 50px; 
+} 
+.service img img{ 
+width: 100%; 
+} 
+.service item h5{ 
+font-size: 1.1rem; 
+font-weight:bold; 
+} 
+.service item p{ 
+font-size: .9rem; 
+color: var(--text-color); 
+} 
+//Featured Tour List 
+import React from 'react' 
+import ToureCard from '../../shared/ToureCard' 
+// import tourData from '../../data/data/tours' 
+import { Col } from 'react-bootstrap' 
+import useFetch from '../../hooks/useFetch' 
+import { BASE_URL } from './../../utils/config' 
+const FeaturedTourList = () => { 
+const{data:featuredTours,loading,error}=useFetch(`${ 
+BASE_URL}/tour/search/getFeaturetour`); 
+return( <> 
+{loading && <h4>Loading ....... </h4>} 
+{error && <h4>{error}</h4>  } 
+{ 
+!loading && !error && 
+featuredTours?.map(tour=>( 
+<Col lg='3' md='6' sm='6' className='mb-4' 
+key={tour._id}> 
+<ToureCard tour={tour}/> 
+</Col> 
+)) 
+} 
+</> 
+); 
+}; 
+export default FeaturedTourList 
+//MasonyGallery 
+import React from 'react' 
+//here we will use masonry for the gallary 
+import Masonry,{ResponsiveMasonry} from 'react- 
+responsive-masonry' 
+import galleryImg from './galleryImg' 
+const Masonygallery = () => { 
+return<> 
+<ResponsiveMasonry 
+columnsCountBreakPoints={{350:1,768:3,992:4}}> 
+<Masonry gutter='1rem'> 
+{ 
+galleryImg.map((item,index)=>( 
+<img className='masonry img' 
+src={item} key={index} alt='..' 
+style={{'width':'100%','display':'block','borderRadius 
+':'10px'}}/> 
+)) 
+} 
+</Masonry> 
+</ResponsiveMasonry> 
+</> 
+} 
+export default Masonygallery 
+import galleryImg01 from '../data/image/gallery-01.jpg' 
+import galleryImg02 from '../data/image/gallery-02.jpg' 
+import galleryImg03 from '../data/image/gallery-03.jpg' 
+import galleryImg04 from '../data/image/gallery-04.jpg' 
+import galleryImg05 from '../data/image/gallery-05.jpg' 
+import galleryImg06 from '../data/image/gallery-06.jpg' 
+import galleryImg07 from '../data/image/gallery-07.jpg' 
+const galleryImg=[ 
+galleryImg01, 
+galleryImg02, 
+galleryImg02, 
+galleryImg03, 
+// galleryImg03, 
+galleryImg04, 
+galleryImg05, 
+galleryImg06, 
+galleryImg07, 
+galleryImg07, 
+] 
+export default galleryImg;
+//TESTIMONIAL 
+import React from 'react' 
+import Slider from 'react-slick' 
+import ava01 from '../../data/image/ava-1.jpg' 
+import ava02 from '../../data/image/ava-2.jpg' 
+import ava03 from '../../data/image/ava-3.jpg' 
+// import ava02 from '../../data/image/avatar.jpg' 
+const Testimonial = () => { 
+const settings = { 
+dots: true, 
+infinite: true, 
+autoplay: true, 
+speed: 1000, 
+swipeToSlide: true, 
+autoplaySpeed: 2000, 
+slidesToShow:3, 
+responsive: [ 
+{ 
+}, 
+{ 
+}, 
+], 
+}; 
+breakpoint: 992, 
+settings: { 
+slidesToShow: 2, 
+slidesToScroll: 1, 
+infinite: true, 
+dots: true, 
+}, 
+breakpoint: 576, 
+settings: { 
+slidesToShow: 1, 
+slidesToScroll: 1, 
+}, 
+return <Slider {...settings}> 
+<div className='testimonial py-4 px-3'> 
+<p>Open-source neutral-style system 
+symbols elaborately crafted 
+for designers and developers. 
+All of the icons are free for both 
+personal and commercial 
+use. 
+</p> 
+<div className='d-flex align-items-center 
+gap-4 mt-3 '> 
+<img src={ava01} alt='avatar1' 
+className='w-25 h-25 rounded-2' /> 
+<div > 
+<h5 className='mb-0 mt-3 '>Amar 
+sonu nath</h5> 
+<p>Customer</p> 
+</div> 
+</div> 
+</div> 
+<div className='testimonial py-4 px-3'> 
+<p>Open-source neutral-style system 
+symbols elaborately crafted 
+for designers and developers. 
+All of the icons are free for both 
+personal and commercial 
+use. 
+</p> 
+<div className='d-flex align-items-center 
+gap-4 mt-3 '> 
+<img src={ava02} alt='avatar2' 
+className='w-25 h-25 rounded-2' /> 
+<div > 
+<h5 className='mb-0 mt-3 '>Amaan 
+agarwal</h5> 
+<p>Customer</p> 
+</div> 
+</div> 
+</div> 
+<div className='testimonial py-4 px-3'> 
+<p>Open-source neutral-style system 
+symbols elaborately crafted 
+for designers and developers. 
+All of the icons are free for both 
+personal and commercial 
+use. 
+</p> 
+<div className='d-flex align-items-center 
+gap-4 mt-3 '> 
+<img src={ava03} alt='avatar3' 
+className='w-25 h-25 rounded-2' /> 
+<div > 
+<h5 className='mb-0 mt-3 '>kumar 
+sonu nath</h5> 
+<p>Customer</p> 
+</div> 
+</div> 
+</div> 
+<div className='testimonial py-4 px-3'> 
+<p>Open-source neutral-style system 
+symbols elaborately crafted 
+for designers and developers. 
+All of the icons are free for both 
+personal and commercial 
+use. 
+</p> 
+<div className='d-flex align-items-center 
+gap-4 mt-3 '> 
+<img src={ava03} alt='avatar3' 
+className='w-25 h-25 rounded-2' /> 
+<div > 
+<h5 className='mb-0 mt-3 '>kumar 
+sonu nath</h5> 
+<p>Customer</p> 
+</div> 
+</div> 
+</div> 
+<div className='testimonial py-4 px-3'> 
+<p>Open-source neutral-style system 
+symbols elaborately crafted 
+for designers and developers. 
+All of the icons are free for both 
+personal and commercial use. 
+</p> 
+<div className='d-flex align-items-center 
+gap-4 mt-3 '> 
+<img src={ava03} alt='avatar3' 
+className='w-25 h-25 rounded-2' /> 
+<div > 
+<h5 className='mb-0 mt-3 '>kumar 
+sonu nath</h5> 
+<p>Customer</p> 
+</div> 
+</div> 
+</div> 
+</Slider> 
+} 
+export default Testimonial
+//NewsLetter 
+import React from 'react' 
+import './newsletter.css' 
+import { Container, Row, Col } from 'react-bootstrap' 
+import maleTourist from '../data/image/male- 
+tourist.png' 
+const NewsLetter = () => { 
+return <section className='newsletter'> 
+<Container> 
+<Row> 
+<Col lg='6'> 
+<div 
+className='newsletter content'> 
+<h2>subscribe to enjoy 
+travelling</h2> 
+<div 
+className='newsletter input'> 
+<input type='email' 
+placeholder='enter your email' /> 
+<button className='btn 
+newsletter btn'>Subscribe</button> 
+</div> 
+<p>Lorem ipsum dolor sit amet, 
+consectetur adipiscing elit. 
+Ut enim ad minim veniam, 
+quis nostrud exercita. 
+</p> 
+</div> 
+</Col> 
+<Col lg='6'> 
+<div className='newsletter img'> 
+<img src={maleTourist} 
+alt='...'/> 
+</div> 
+</Col> 
+</Row> 
+</Container> 
+</section> 
+} 
+export default NewsLetter 
+//Newsletter CSS 
+.newsletter{ 
+background: #cae5f4; 
+padding: 0; 
+margin-top: 3rem; 
+} 
+.newsletter img img{ 
+width: 100%; 
+} 
+.newsletter content{ 
+padding: 50px 0; 
+} 
+.newsletter content h2{ 
+font-size: 2.5rem; 
+margin-bottom: 2rem; 
+} 
+.newsletter input{ 
+display: flex; 
+align-items: center; 
+justify-content: space-between; 
+background:#fff; 
+padding: .5rem; 
+margin-bottom: 2rem; 
+border-radius: 5px; 
+} 
+.newsletter input input{ 
+border: none; 
+font-size: 1rem; 
+color: var(--heading-color); 
+} 
+.newsletter input input:focus{ 
+outline: none; 
+} 
+.newsletter btn{ 
+padding: 0.5rem 1.5rem !important; 
+background: var(--secondary-color) !important; 
+color: #fff !important; 
+font-size: 1.1rem !important; 
+} 
+.newsletter content p{ 
+color: var(--heading-color); 
+font-size: 1.1rem; 
+} 
+@media only screen and (max-width:992px) { 
+.newsletter content h2{ 
+font-size: 2rem; 
+} 
+.newsletter img{ 
+display: none; 
+} 
+} 
+@media only screen and (max-width:576px) { 
+.newsletter content h2{ 
+font-size: 1.5rem; 
+} 
+.newsletter content p{ 
+display: none; 
+} 
+}
+//Router 
+ 
+import React from 'react' 
+import { Routes, Route, Navigate } from 'react-router-dom'; 
+ 
+import Home from '../../pages/Home'; 
+import Login from '../../pages/Login'; 
+import Register from '../../pages/Register'; 
+import Search from '../../pages/Search'; 
+import Travel from '../../pages/Travel'; 
+import About from '../../pages/About'; 
+import Traveldetails from '../../pages/Traveldetails'; 
+import Gallery from '../../pages/Gallery'; 
+import ThankYou from '../../pages/ThankYou'; 
+ 
+ 
+const Routers = () => { 
+  return ( 
+    <Routes> 
+        <Route path='/' element={<Navigate to ="Home"/>}></Route> 
+        <Route path='/home' element={<Home/>}></Route> 
+        <Route path='/travel' element={<Travel/>}></Route> 
+        <Route path='/about' element={<About/>}></Route> 
+        <Route path='/tour/:id' element={<Traveldetails/>}></Route> 
+        <Route path='/login' element={<Login/>}></Route> 
+        <Route path='/register' element={<Register/>}></Route>  
+ 
+        <Route path='/travel/search' element={<Search/>}></Route> 
+        <Route path='/gallery' element={<Gallery/>}></Route> 
+        <Route path='/thank-you' element={<ThankYou/>}></Route>     
+    </Routes> 
+  ) 
+} 
+ 
+export default Routers 
+ 
+ 
+ 
+//FOOTER 
+ 
+ 
+import React from 'react' 
+import './footer.css' 
+import { Container, Row, Col, ListGroup, 
+ListGroupItem, } from 'react-bootstrap' 
+import { Link } from 'react-router-dom' 
+import logo from '../../data/image/logo.png'; 
+const quick_link = [ 
+{ 
+path: '/home', 
+display: 'Home' 
+}, 
+{ 
+path: '/about', 
+display: 'About' 
+}, 
+{ 
+path: '/tour', 
+display: 'Tour' 
+}, 
+]; 
+const quick_link02 = [ 
+{ 
+path: '/login', 
+display: 'Login' 
+}, 
+{ 
+path: '/register', 
+display: 'Register', 
+}, 
+{ 
+path:'/main', 
+display:'Admin', 
+}, 
+]; 
+const Footer = () => { 
+return <footer className='footer'> 
+<Container> 
+<Row> 
+<Col lg='3'> 
+<div className='logo'> 
+<img src={logo} alt='...' /> 
+<p>Lorem ipsum dolor sit amet, consectetur 
+adipiscing elit. Sed do eiusmod tempor </p> 
+<div className='social links d-flex align- 
+items-center gap-4'> 
+<span> 
+<Link to='#'> 
+<i class="ri-youtube-line"></i> 
+</Link> 
+</span> 
+<span> 
+<Link to='#'> 
+<i class="ri-github-fill"></i> 
+</Link> 
+</span> 
+<span> 
+<Link to='#'> 
+<i class="ri-facebook-circle- 
+line"></i> 
+</Link> 
+</span> 
+<span> 
+<Link to='#'> 
+<i class="ri-instagram-line"></i> 
+</Link> 
+</span> 
+</div> 
+</div> 
+</Col> 
+<Col lg='3'> 
+<h5 className='footer link- 
+title'>Discover</h5> 
+<ListGroup className='footer quick-links'> 
+{ 
+quick_link.map((item,index)=>( 
+<ListGroupItem key={index} 
+className='ps-0 border-0'> 
+<Link to={item.path} class="text- 
+decoration-none text-secondary">{item.display}</Link> 
+</ListGroupItem> 
+)) 
+} 
+</ListGroup> 
+</Col> 
+<Col lg='3'> 
+<h5 className='footer link-title'>Quick 
+Links</h5> 
+<ListGroup className='footer quick-links'> 
+{ 
+quick_link02.map((item,index)=>( 
+<ListGroupItem key={index} 
+className='ps-0 border-0 ' > 
+<Link to={item.path} class="text- 
+decoration-none text-secondary">{item.display}</Link> 
+</ListGroupItem> 
+)) 
+} 
+</ListGroup> 
+</Col> 
+<Col lg='3'> 
+<h5 className='footer link- 
+title'>Contact</h5> 
+<ListGroup className='footer quick-links'> 
+<ListGroupItem className='ps-0 border-0 d- 
+flex align-items-center gap-3'> 
+<h6 className='mb-0 d-flex align- 
+items-center gap-2'> 
+<span> 
+<i class="ri-map-pin-line"></i> 
+</span> 
+Address: 
+</h6> 
+<p className='mb- 
+0'>america,Bangladesh</p> 
+</ListGroupItem> 
+<ListGroupItem className='ps-0 border-0 d- 
+flex align-items-center gap-3'> 
+<h6 className='mb-0 d-flex align- 
+items-center gap-2'> 
+<span> 
+<i class="ri-mail-line"></i> 
+</span> 
+Email: 
+</h6> 
+<p className='mb- 
+0'>castiron1998@gmail.com</p> 
+</ListGroupItem> 
+<ListGroupItem className='ps-0 border-0 d- 
+flex align-items-center gap-3'> 
+<h6 className='mb-0 d-flex align- 
+items-center gap-2'> 
+<span> 
+<i class="ri-phone-fill"></i> 
+</span> 
+Phone no: 
+</h6> 
+<p className='mb-0'>8910346685</p> 
+</ListGroupItem> 
+</ListGroup> 
+</Col> 
+</Row> 
+</Container> 
+</footer> 
+} 
+export default Footer 
+//FOOTER CSS 
+.footer{ 
+padding-top: 70px; 
+padding-bottom: 30px; 
+} 
+.footer .logo img{ 
+width: 50%; 
+margin-bottom: 1rem; 
+} 
+.footer .logo p{ 
+color: var(--text-color); 
+} 
+.social links span a{ 
+text-decoration: none; 
+color: var(--heading-color); 
+font-size: 1.2rem; 
+} 
+.footer link-title{ 
+color: var(--heading-color); 
+margin-bottom: 1rem; 
+} 
+.footer quick-links h6 span{ 
+color: var(--secondary-color); 
+font-size: 1.1rem; 
+} 
+Image : IN PROGRESS 
+//REGISTER 
+import React,{useState,useContext} from 'react' 
+import { Container,Row,Col,Form,FormGroup,Button } 
+from 'react-bootstrap' 
+import { Link, useNavigate } from 'react-router-dom' 
+import regImg from '../data/image/login.png' 
+import userIcon from '../data/image/user.png' 
+import {AuthContext} from './../context/AuthContext' 
+import { BASE_URL } from './../utils/config' 
+import '../style/register.css' 
+const Register = () => { 
+const [credential,setCredential]=useState({ 
+username:undefined, 
+email:undefined, 
+password:undefined, 
+}); 
+const {dispatch}=useContext(AuthContext) 
+const navigate=useNavigate() 
+const handleClick= async (e)=>{ 
+e.preventDefault(); 
+try{ 
+const res = await 
+fetch(`${BASE_URL}/auth/register`,{ 
+method:'post', 
+headers:{ 
+'content-type':'application/json' 
+}, 
+body:JSON.stringify(credential) 
+}) 
+const result = await res.json() 
+if(!res.ok) alert(result.message) 
+dispatch({type:'REGISTER_SUCCESS'}) 
+navigate('/login') 
+}catch(err){ 
+alert(err.message) 
+} 
+} 
+const handleChange=(e)=>{ 
+setCredential(prev 
+=>({...prev,[e.target.id]:e.target.value})) 
+}; 
+return <section> 
+<Container> 
+<Row> 
+<Col lg='8' className='m-auto'> 
+<div className='login container d-flex 
+justify-content-between'> 
+<div className='login img'> 
+<img src={regImg} alt="..."/> 
+</div> 
+<div className='login form'> 
+<div className='user'> 
+<img src={userIcon} alt="..."/> 
+</div> 
+<h2>Register</h2> 
+<Form onSubmit={handleClick}> 
+<FormGroup> 
+<input type='text' 
+placeholder='username' required id='username' 
+onChange={handleChange}/> 
+</FormGroup> 
+<FormGroup> 
+<input type='email' 
+placeholder='email' required id='email' 
+onChange={handleChange}/> 
+</FormGroup> 
+<FormGroup> 
+<input type='password' 
+placeholder='Password' required id='password' 
+onChange={handleChange}/> 
+</FormGroup> 
+<Button className='btn 
+secondary btn auth btn' 
+type='submit'>Register</Button> 
+</Form> 
+<p>Already have an account ?<Link 
+to='/login'>Login</Link></p> 
+</div> 
+</div> 
+</Col> 
+</Row> 
+</Container> 
+</section> 
+} 
+export default Register 
+//Register CSS 
+.login img{ 
+width: 60%; 
+text-align: center; 
+} 
+.login img img{ 
+width: 70%; 
+object-fit: contain; 
+} 
+.login form{ 
+padding: 50px; 
+background: var(--secondary-color); 
+position: relative; 
+} 
+.login container{ 
+box-shadow: rgba(17,12,46,0.15) 0px 48px 100px 
+8px; 
+margin-top: 100px; 
+} 
+.login form .user{ 
+width: 80px; 
+height: 80px; 
+position: absolute; 
+top: -9%; 
+left: 50%; 
+transform: translate(-50%,-9%); 
+} 
+.login form .user img{ 
+width: 100%; 
+} 
+.login form h2{ 
+color: #fff; 
+text-align: center; 
+margin-bottom: 2rem; 
+} 
+.login form{ 
+width: 40%; 
+} 
+.login form input{ 
+width: 100%; 
+margin: 2px; 
+padding: 0.5rem 1rem; 
+border-radius: 5px; 
+border: none; 
+font-size: 1rem; 
+color: var(--heading-color); 
+} 
+.login form input:focus{ 
+outline: none; 
+} 
+.auth btn{ 
+background: var(--heading-color) !important; 
+width: 100%; 
+color: #fff !important; 
+} 
+.login form p{ 
+font-size: .9rem; 
+color: #fff; 
+margin-top: 1.5rem; 
+text-align: center; 
+} 
+.login form p a{ 
+color: var(--heading-color); 
+text-decoration: none; 
+margin-left: 5px; 
+font-weight: bold; 
+}
