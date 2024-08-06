@@ -1,0 +1,44 @@
+import React, { useRef, useContext } from 'react' 
+import './Header.css'; 
+ 
+import { AuthContext } from '../../context/AuthContext'; 
+ 
+import { Container, Row, Button } from 'react-bootstrap' 
+import { NavLink, Link, useNavigate } from 'react-router-dom' 
+import { RiAlignJustify } from "react-icons/ri"; 
+ 
+import logo from '../../components/image/Logo.jpg' 
+ 
+const nav__links = [ 
+    { 
+        path:'/home', 
+        display:'Home' 
+    }, 
+    { 
+        path:'/about', 
+        display:'About' 
+    }, 
+    { 
+        path:'/travel', 
+        display:'Travel' 
+    }, 
+ 
+] 
+const Header = () => { 
+    const headerRef = useRef(null) 
+    const menuRef = useRef(null) 
+    const navigate = useNavigate() 
+    const {user, dispatch} = useContext(AuthContext) 
+ 
+    const logout = () => { 
+        dispatch({ type: 'LOGOUT' }) 
+        navigate('/') 
+     } 
+ 
+ const toggleMenu = () => menuRef.current.classList.toggle('show_menu') 
+ 
+  return <header className='header' ref={headerRef}> 
+    <Container> 
+        <Row> 
+ 
+        <div className='head d-flex align-items-center justify-content-between gap-4'>
